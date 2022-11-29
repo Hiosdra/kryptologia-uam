@@ -9,6 +9,7 @@
 *.zip
 *.tar.gz
 *.rar
+**/build/**
 hs_err_pid*
 replay_pid*
 .idea/**/workspace.xml
