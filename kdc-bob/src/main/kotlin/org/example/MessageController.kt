@@ -1,8 +1,11 @@
 package org.example
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import org.example.Config.ALGORITHM
 import org.example.model.Algorithm
 import org.example.model.EncryptedMessageRequest
+import org.example.model.Message
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
@@ -16,7 +19,8 @@ private val BOB_KEY = when (ALGORITHM) {
 
 @RestController
 class MessageController(
-    private val keyService: KeyService
+    private val keyService: KeyService,
+    private val fileService: FileService
 ) {
 
     @PostMapping("/message")
@@ -24,12 +28,24 @@ class MessageController(
         @RequestHeader("x-algorithm") algorithm: String,
         @RequestBody messageRequest: EncryptedMessageRequest
     ) {
-        println(messageRequest)
+        val mapper = jacksonObjectMapper()
+
         val identity = keyService.decryptKey(messageRequest.encryptedIdentity, BOB_KEY, ALGORITHM)
-        println("Identity: $identity")
         val sessionKey = keyService.decryptKey(messageRequest.encryptedSessionKey, BOB_KEY, ALGORITHM)
-        println("Session key: $sessionKey")
-        val message = keyService.decryptKey(messageRequest.encryptedMessage, sessionKey, ALGORITHM)
-        println("Message: $message")
+        val message: Message = mapper.readValue(keyService.decryptKey(messageRequest.encryptedMessage, sessionKey, ALGORITHM))
+        if(message.isFile){
+            println(messageRequest)
+            println("Identity: $identity")
+            println("Session key: $sessionKey")
+            println("Message: $message")
+            fileService.saveFile(message)
+
+        }else{
+            println(messageRequest)
+            println("Identity: $identity")
+            println("Session key: $sessionKey")
+            println("Message: ${message.message}")
+
+        }
     }
 }

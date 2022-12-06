@@ -12,4 +12,6 @@ fun main(args: Array<String>) {
 class DemoApplication {
     @Bean
     fun keyService(): KeyService = KeyService()
+    @Bean
+    fun fileService(): FileService = FileService()
 }
