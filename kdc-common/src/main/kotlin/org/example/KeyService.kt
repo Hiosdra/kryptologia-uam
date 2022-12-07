@@ -3,7 +3,7 @@ package org.example
 import org.example.Config.ALGORITHM
 import org.example.model.Algorithm
 import java.security.SecureRandom
-import java.util.*
+import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
@@ -21,27 +21,27 @@ class KeyService {
         return keyGenerator.generateKey()
     }
 
-    fun encryptKey(keyToEncrypt: String, encryptingKey: String, algorithm: Algorithm): String {
+    fun encryptKey(keyToEncrypt: String, encryptingKey: String, algorithm: Algorithm, iv: IvParameterSpec): String {
         val encryptingKey = SecretKeyUtil.fromString(encryptingKey, algorithm)
-        return encrypt(algorithm, keyToEncrypt, encryptingKey)
+        return encrypt(algorithm, keyToEncrypt, encryptingKey, iv)
     }
 
-    private fun encrypt(algorithm: Algorithm, input: String, key: SecretKey): String {
-        val cipher = Cipher.getInstance(algorithm.name)
-        cipher.init(Cipher.ENCRYPT_MODE, key) // iv here?
+    private fun encrypt(algorithm: Algorithm, input: String, key: SecretKey, iv: IvParameterSpec): String {
+        val cipher = Cipher.getInstance(algorithm.cipher)
+        cipher.init(Cipher.ENCRYPT_MODE, key, iv) // iv here?
         val cipherText = cipher.doFinal(input.toByteArray())
         return Base64.getEncoder()
             .encodeToString(cipherText)
     }
 
-    fun decryptKey(encryptedKey: String, decryptingKey: String, algorithm: Algorithm): String {
+    fun decryptKey(encryptedKey: String, decryptingKey: String, algorithm: Algorithm, iv: IvParameterSpec): String {
         val decryptingKey = SecretKeyUtil.fromString(decryptingKey, algorithm)
-        return decrypt(algorithm, encryptedKey, decryptingKey)
+        return decrypt(algorithm, encryptedKey, decryptingKey, iv)
     }
 
-    private fun decrypt(algorithm: Algorithm, encryptedKey: String, key: SecretKey): String {
-        val cipher = Cipher.getInstance(algorithm.name)
-        cipher.init(Cipher.DECRYPT_MODE, key)
+    private fun decrypt(algorithm: Algorithm, encryptedKey: String, key: SecretKey, iv: IvParameterSpec): String {
+        val cipher = Cipher.getInstance(algorithm.cipher)
+        cipher.init(Cipher.DECRYPT_MODE, key, iv)
         val plainText = cipher.doFinal(
             Base64.getDecoder().decode(encryptedKey.toByteArray())
         )

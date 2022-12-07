@@ -1,7 +1,7 @@
 package org.example
 
 import org.example.model.Algorithm
-import java.util.*
+import java.util.Base64
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
 
@@ -16,4 +16,10 @@ object SecretKeyUtil {
     }
 }
 
+fun ByteArray.asBase64(): String {
+    return Base64.getEncoder().encodeToString(this)
+}
 
+fun String.fromBase64(): ByteArray {
+    return Base64.getDecoder().decode(this)
+}

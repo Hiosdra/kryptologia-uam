@@ -24,11 +24,13 @@ class KeyController(
             Algorithm.Blowfish -> BlowfishKeys
         }
         val sessionKey = keyService.generateKey(algorithm).encodeToString()
+        val iv = keyService.generateIv()
+        println("Iv size: " + iv.iv.size)
         println("Session key: $sessionKey")
-        val encryptedByAliceKey = keyService.encryptKey(sessionKey, keys.AliceKey, algorithm)
-        val encryptedByBobKey = keyService.encryptKey(sessionKey, keys.BobKey, algorithm)
-        val encryptedIdentity = keyService.encryptKey(identity, keys.BobKey, algorithm)
-        return KeyResponse(encryptedByAliceKey, encryptedByBobKey, encryptedIdentity)
+        val encryptedByAliceKey = keyService.encryptKey(sessionKey, keys.AliceKey, algorithm, iv)
+        val encryptedByBobKey = keyService.encryptKey(sessionKey, keys.BobKey, algorithm, iv)
+        val encryptedIdentity = keyService.encryptKey(identity, keys.BobKey, algorithm, iv)
+        return KeyResponse(encryptedByAliceKey, encryptedByBobKey, encryptedIdentity, iv.iv.asBase64())
     }
 
     private fun getAlgorithm(algorithm: String) = try {

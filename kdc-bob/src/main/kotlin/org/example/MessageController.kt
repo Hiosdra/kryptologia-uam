@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RestController
+import javax.crypto.spec.IvParameterSpec
 
 private val BOB_KEY = when (ALGORITHM) {
     Algorithm.AES -> "h1bQ81EmUf9fjeHOtnpJCA=="
@@ -29,18 +30,19 @@ class MessageController(
         @RequestBody messageRequest: EncryptedMessageRequest
     ) {
         val mapper = jacksonObjectMapper()
-
-        val identity = keyService.decryptKey(messageRequest.encryptedIdentity, BOB_KEY, ALGORITHM)
-        val sessionKey = keyService.decryptKey(messageRequest.encryptedSessionKey, BOB_KEY, ALGORITHM)
-        val message: Message = mapper.readValue(keyService.decryptKey(messageRequest.encryptedMessage, sessionKey, ALGORITHM))
-        if(message.isFile){
+        val iv = IvParameterSpec(messageRequest.iv.fromBase64())
+        val identity = keyService.decryptKey(messageRequest.encryptedIdentity, BOB_KEY, ALGORITHM, iv)
+        val sessionKey = keyService.decryptKey(messageRequest.encryptedSessionKey, BOB_KEY, ALGORITHM, iv)
+        val message: Message =
+            mapper.readValue(keyService.decryptKey(messageRequest.encryptedMessage, sessionKey, ALGORITHM, iv))
+        if (message.isFile) {
             println(messageRequest)
             println("Identity: $identity")
             println("Session key: $sessionKey")
             println("Message: $message")
             fileService.saveFile(message)
 
-        }else{
+        } else {
             println(messageRequest)
             println("Identity: $identity")
             println("Session key: $sessionKey")

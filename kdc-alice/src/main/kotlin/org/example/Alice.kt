@@ -8,7 +8,8 @@ import org.example.model.EncryptedMessageRequest
 import org.example.model.KeyResponse
 import org.example.model.Message
 import retrofit2.create
-import java.util.*
+import java.util.Scanner
+import javax.crypto.spec.IvParameterSpec
 import kotlin.system.exitProcess
 
 private val ALICE_KEY = when (ALGORITHM) {
@@ -31,7 +32,15 @@ private val mapper = jacksonObjectMapper()
 suspend fun main() {
     val keys = mdcClient.getKeys(ALGORITHM.name, ALICE_IDENTITY)
     println("Response: $keys")
-    val sessionKey = keyService.decryptKey(keys.encryptedByAliceKey, ALICE_KEY, ALGORITHM)
+    val rawIv = keys.iv.fromBase64()
+    println("Iv size: ${rawIv.size}")
+    val iv = IvParameterSpec(rawIv)
+    val sessionKey = keyService.decryptKey(
+        keys.encryptedByAliceKey,
+        ALICE_KEY,
+        ALGORITHM,
+        iv
+    )
     println("Session key: $sessionKey")
     println("Type in messages:")
     while (true) {
@@ -50,13 +59,18 @@ suspend fun main() {
             msg = Message(input, false, "")
         }
 
-        sendMessage(keys, mapper.writeValueAsString(msg), sessionKey)
+        sendMessage(keys, mapper.writeValueAsString(msg), sessionKey, iv)
     }
 }
 
-suspend fun sendMessage(keys: KeyResponse, message: String?, sessionKey: String) {
-    val encryptedMessage = keyService.encryptKey(message.toString(), sessionKey, ALGORITHM)
+suspend fun sendMessage(keys: KeyResponse, message: String?, sessionKey: String, iv: IvParameterSpec) {
+    val encryptedMessage = keyService.encryptKey(message.toString(), sessionKey, ALGORITHM, iv)
     val messageRequest =
-        EncryptedMessageRequest(encryptedMessage, keys.encryptedByBobKey, keys.encryptedIdentity)
+        EncryptedMessageRequest(
+            encryptedMessage,
+            keys.encryptedByBobKey,
+            keys.encryptedIdentity,
+            iv.iv.asBase64()
+        )
     bobClient.sendMessage(ALGORITHM.name, messageRequest)
 }
