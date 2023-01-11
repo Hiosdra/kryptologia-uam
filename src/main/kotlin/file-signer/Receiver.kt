@@ -50,7 +50,7 @@ private fun verify(
 }
 
 private fun initSignature(publicKey: PublicKey): Signature {
-    val signature = Signature.getInstance("SHA256withRSA")
+    val signature = Signature.getInstance("SHA256withDSA")
     signature.initVerify(publicKey)
     return signature
 }

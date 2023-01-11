@@ -11,7 +11,7 @@ import java.security.PublicKey
 import java.security.Signature
 
 private const val FILE_PATH = "/Users/oskar.drozda/Projects/kryptografia/src/main/resources/apple.png"
-private const val IP = "10.100.6.71"
+private const val IP = "localhost"
 
 fun main() {
     val file = File(FILE_PATH)
@@ -27,14 +27,14 @@ fun main() {
 }
 
 private fun generateKeys(): KeyPair {
-    val keyGen = KeyPairGenerator.getInstance("RSA")
+    val keyGen = KeyPairGenerator.getInstance("DSA")
     keyGen.initialize(2048)
     val keyPair = keyGen.genKeyPair()
     return keyPair
 }
 
 private fun createSignature(privateKey: PrivateKey): Signature {
-    val signature = Signature.getInstance("SHA256withRSA")
+    val signature = Signature.getInstance("SHA256withDSA")
     signature.initSign(privateKey)
     return signature
 }
