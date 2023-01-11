@@ -11,7 +11,6 @@ import java.security.Signature
 
 private const val FILE_PATH = "/Users/oskar.drozda/Projects/kryptografia/src/main/resources/apple-received.png"
 
-
 fun main() {
     val serverSocket = ServerSocket(3000)
     while (true) {
@@ -19,10 +18,10 @@ fun main() {
         val inputStream = socket.getInputStream()
         val objectInputStream = ObjectInputStream(inputStream)
 
-        val file = objectInputStream.readObject() as File
-        Files.write(Path.of(FILE_PATH), file.readBytes())
         val signatureBytes = objectInputStream.readObject() as ByteArray
         val publicKey = objectInputStream.readObject() as PublicKey
+        val fileBytes = objectInputStream.readBytes()
+        Files.write(Path.of(FILE_PATH), fileBytes)
 
         println("Signature: ${signatureBytes.contentToString()}")
         println("Public key: $publicKey")

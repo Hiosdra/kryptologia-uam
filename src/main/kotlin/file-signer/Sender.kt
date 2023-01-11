@@ -56,9 +56,9 @@ private fun send(file: File, signatureBytes: ByteArray, publicKey: PublicKey) {
     val outputStream = socket.getOutputStream()
     val objectOutputStream = ObjectOutputStream(outputStream)
 
-    objectOutputStream.writeObject(file)
     objectOutputStream.writeObject(signatureBytes)
     objectOutputStream.writeObject(publicKey)
+    objectOutputStream.write(file.readBytes())
     objectOutputStream.flush()
     socket.close()
 }
