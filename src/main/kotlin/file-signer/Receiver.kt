@@ -9,7 +9,7 @@ import java.nio.file.Path
 import java.security.PublicKey
 import java.security.Signature
 
-private const val FILE_PATH = "/Users/oskar.drozda/Projects/kryptografia/src/old.main/resources/apple-received.png"
+private const val FILE_PATH = "/Users/oskar.drozda/Projects/kryptografia/src/main/resources/apple-received.png"
 
 
 fun main() {
@@ -20,14 +20,14 @@ fun main() {
         val objectInputStream = ObjectInputStream(inputStream)
 
         val file = objectInputStream.readObject() as File
+        Files.write(Path.of(FILE_PATH), file.readBytes())
         val signatureBytes = objectInputStream.readObject() as ByteArray
         val publicKey = objectInputStream.readObject() as PublicKey
 
         println("Signature: ${signatureBytes.contentToString()}")
         println("Public key: $publicKey")
 
-        val verified = verify(publicKey, file, signatureBytes)
-        Files.write(Path.of(FILE_PATH), file.readBytes())
+        val verified = verify(publicKey, File(FILE_PATH), signatureBytes)
         println("Signature verified: $verified")
     }
 }

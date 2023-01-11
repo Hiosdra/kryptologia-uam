@@ -10,8 +10,8 @@ import java.security.PrivateKey
 import java.security.PublicKey
 import java.security.Signature
 
-private const val FILE_PATH = "/Users/oskar.drozda/Projects/kryptografia/src/old.main/resources/apple.png"
-private const val IP = "localhost"
+private const val FILE_PATH = "/Users/oskar.drozda/Projects/kryptografia/src/main/resources/apple.png"
+private const val IP = "10.100.6.71"
 
 fun main() {
     val file = File(FILE_PATH)
