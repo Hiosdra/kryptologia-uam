@@ -7,7 +7,6 @@ import java.net.Socket
 import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.security.PrivateKey
-import java.security.PublicKey
 import java.security.Signature
 
 private const val FILE_PATH = "/Users/oskar.drozda/Projects/kryptografia/src/main/resources/apple.png"
@@ -22,7 +21,7 @@ fun main() {
     val signature = createSignature(keyPair.private)
     val signatureBytes = sign(file, signature)
     println("Signature: ${signatureBytes.contentToString()}")
-    send(file, signatureBytes, keyPair.public)
+    sendData(signatureBytes, keyPair, file)
     println("File sent!")
 }
 
@@ -51,14 +50,25 @@ private fun sign(file: File, signature: Signature): ByteArray {
     return signatureBytes
 }
 
-private fun send(file: File, signatureBytes: ByteArray, publicKey: PublicKey) {
+private fun sendData(signatureBytes: ByteArray, keyPair: KeyPair, file: File) {
     val socket = Socket(IP, 3000)
     val outputStream = socket.getOutputStream()
     val objectOutputStream = ObjectOutputStream(outputStream)
-
-    objectOutputStream.writeObject(signatureBytes)
-    objectOutputStream.writeObject(publicKey)
-    objectOutputStream.write(file.readBytes())
+    sendSignatureAndPublicKey(objectOutputStream, signatureBytes, keyPair)
+//    sendFile(objectOutputStream, file)
     objectOutputStream.flush()
     socket.close()
+}
+
+private fun sendSignatureAndPublicKey(
+    objectOutputStream: ObjectOutputStream,
+    signatureBytes: ByteArray,
+    keyPair: KeyPair
+) {
+    objectOutputStream.writeObject(signatureBytes)
+    objectOutputStream.writeObject(keyPair.public)
+}
+
+private fun sendFile(objectOutputStream: ObjectOutputStream, file: File) {
+    objectOutputStream.write(file.readBytes())
 }

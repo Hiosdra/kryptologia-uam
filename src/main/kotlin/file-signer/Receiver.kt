@@ -20,15 +20,19 @@ fun main() {
 
         val signatureBytes = objectInputStream.readObject() as ByteArray
         val publicKey = objectInputStream.readObject() as PublicKey
-        val fileBytes = objectInputStream.readBytes()
-        Files.write(Path.of(FILE_PATH), fileBytes)
+//        receiveAndSaveFile(objectInputStream)
 
-        println("Signature: ${signatureBytes.contentToString()}")
         println("Public key: $publicKey")
+        println("Signature: ${signatureBytes.contentToString()}")
 
         val verified = verify(publicKey, File(FILE_PATH), signatureBytes)
         println("Signature verified: $verified")
     }
+}
+
+private fun receiveAndSaveFile(objectInputStream: ObjectInputStream) {
+    val fileBytes = objectInputStream.readBytes()
+    Files.write(Path.of(FILE_PATH), fileBytes)
 }
 
 private fun verify(
