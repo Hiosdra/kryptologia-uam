@@ -29,8 +29,8 @@ tasks.test {
 dependencies {
     implementation("org.bouncycastle:bcprov-jdk15on:1.69")
     implementation("org.bouncycastle:bcpkix-jdk15on:1.69")
-    implementation("org.bouncycastle:bcprov-jdk15:1.69")
-    implementation("org.bouncycastle:bc-fips:1.0.2.3")
-    implementation("org.bouncycastle:bouncycastle-fips-jdk15on:1.67")
+//    implementation("org.bouncycastle:bcprov-jdk15:1.69")
+//    implementation("org.bouncycastle:bc-fips:1.0.2.3")
+//    implementation("org.bouncycastle:bouncycastle-fips-jdk15on:1.67")
     testImplementation(kotlin("test"))
 }
