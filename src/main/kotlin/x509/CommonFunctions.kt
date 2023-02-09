@@ -10,13 +10,13 @@ import java.io.StringWriter
 import java.security.cert.X509Certificate
 
 class CommonFunctions {
-     private fun convertToBase64PEMString(x509Cert: X509Certificate): String {
+    private fun convertToBase64PEMString(x509Cert: X509Certificate): String {
         val sw = StringWriter()
         PEMWriter(sw).use { pw -> pw.writeObject(x509Cert) }
         return sw.toString()
     }
 
-    fun saveIntoFile(x509Cert: X509Certificate, path: String){
+    fun saveIntoFile(x509Cert: X509Certificate, path: String) {
         val certificate = convertToBase64PEMString(x509Cert)
         PrintWriter(File(path)).use {
             it.println(certificate)
