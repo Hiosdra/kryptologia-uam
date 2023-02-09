@@ -19,7 +19,7 @@ fun main() {
     val commonFunctions = CommonFunctions()
     val rootCertificate = createRootCertificate(X500Name("CN=Root Certificate"), 365)
     val certificate = JcaX509CertificateConverter().getCertificate(rootCertificate)
-    commonFunctions.saveIntoFile(certificate, "src/main/resources/cert/rootCert.txt")
+    commonFunctions.saveIntoFile(certificate, "src/main/resources/cert/rootCert.pem")
     println(certificate)
 }
 
