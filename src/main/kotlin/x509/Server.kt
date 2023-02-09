@@ -9,7 +9,8 @@ import java.net.Socket
 
 fun main() {
     val commonFunctions = CommonFunctions()
-    val rootCertHolder = createRootCertificate(X500Name("CN=Root Certificate"), 365)
+    val keyPair = generateKeys()
+    val rootCertHolder = createRootCertificate(X500Name("CN=Root Certificate"), 365, keyPair)
     val rootCert = JcaX509CertificateConverter().getCertificate(rootCertHolder)
     commonFunctions.saveIntoFile(rootCert, "src/main/resources/cert/rootCert.pem")
     println("Root certificate created.")
@@ -22,7 +23,7 @@ fun main() {
         val outputStream = socket.getOutputStream()
         val objectOutputStream = ObjectOutputStream(outputStream)
 
-        val clientCert = generateCertificate(rootCertHolder)
+        val clientCert = generateCertificate(rootCertHolder, keyPair)
         commonFunctions.saveIntoFile(clientCert, "src/main/resources/cert/userCert.pem")
         objectOutputStream.writeObject(clientCert)
         val clientCertSha = commonFunctions.sha256(commonFunctions.convertToBase64PEMString(clientCert))

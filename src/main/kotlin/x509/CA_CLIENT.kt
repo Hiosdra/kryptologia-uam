@@ -8,28 +8,29 @@ import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder
 import java.math.BigInteger
+import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.security.SecureRandom
 import java.security.Security
 import java.security.cert.X509Certificate
 import java.util.Date
 
-fun main() {
-    val commonFunctions = CommonFunctions();
-    val rootCertificate = commonFunctions.readFile("src/main/resources/cert/rootCert.pem")
-    val certificate = JcaX509CertificateConverter().getCertificate(rootCertificate)
-    val childCertificate = generateCertificate(rootCertificate)
-    commonFunctions.saveIntoFile(childCertificate, "src/main/resources/cert/userCert.pem")
-}
+//fun main() {
+//    val commonFunctions = CommonFunctions();
+//    val rootCertificate = commonFunctions.readFile("src/main/resources/cert/rootCert.pem")
+//    val certificate = JcaX509CertificateConverter().getCertificate(rootCertificate)
+//    val childCertificate = generateCertificate(rootCertificate)
+//    commonFunctions.saveIntoFile(childCertificate, "src/main/resources/cert/userCert.pem")
+//}
 
-fun generateCertificate(root: X509CertificateHolder): X509Certificate {
+fun generateCertificate(root: X509CertificateHolder, keyPair: KeyPair): X509Certificate {
     // Add the Bouncy Castle provider
     Security.addProvider(BouncyCastleProvider())
 
     // Generate a 2048-bit RSA key pair
-    val keyGen = KeyPairGenerator.getInstance("RSA", "BC")
-    keyGen.initialize(2048, SecureRandom())
-    val keyPair = keyGen.generateKeyPair()
+//    val keyGen = KeyPairGenerator.getInstance("RSA", "BC")
+//    keyGen.initialize(2048, SecureRandom())
+//    val keyPair = keyGen.generateKeyPair()
 
     // Generate the certificate
     val serialNumber = BigInteger(64, SecureRandom())
