@@ -39,6 +39,11 @@ fun createRootCertificate(subjectDN: X500Name, validityInDays: Int, keyPair: Key
 
     val certificateBuilder =
         X509v3CertificateBuilder(subjectDN, serialNumber, notBefore, notAfter, subjectDN, subjectPublicKeyInfo)
+    certificateBuilder.addExtension(
+        org.bouncycastle.asn1.x509.Extension.basicConstraints,
+        true,
+        org.bouncycastle.asn1.x509.BasicConstraints(true)
+    )
 
     val contentSigner: ContentSigner
     try {
