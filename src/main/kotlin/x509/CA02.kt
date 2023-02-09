@@ -13,11 +13,13 @@ import java.math.BigInteger
 import java.security.KeyPairGenerator
 import java.security.SecureRandom
 import java.security.Security
-import java.util.Date
+import java.util.*
 
 fun main() {
+    val commonFunctions = CommonFunctions()
     val rootCertificate = createRootCertificate(X500Name("CN=Root Certificate"), 365)
     val certificate = JcaX509CertificateConverter().getCertificate(rootCertificate)
+    commonFunctions.saveIntoFile(certificate, "src/main/resources/cert/rootCert.txt")
     println(certificate)
 }
 

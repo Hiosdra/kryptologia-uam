@@ -12,13 +12,14 @@ import java.security.KeyPairGenerator
 import java.security.SecureRandom
 import java.security.Security
 import java.security.cert.X509Certificate
-import java.util.Date
+import java.util.*
 
 fun main() {
+    val commonFunctions = CommonFunctions();
     val rootCertificate = createRootCertificate(X500Name("CN=Root Certificate"), 365)
     val certificate = JcaX509CertificateConverter().getCertificate(rootCertificate)
     val childCertificate = generateCertificate(rootCertificate)
-    println(childCertificate)
+    commonFunctions.saveIntoFile(childCertificate, "src/main/resources/cert/userCert.txt")
 }
 
 fun generateCertificate(root: X509CertificateHolder): X509Certificate {
@@ -43,3 +44,5 @@ fun generateCertificate(root: X509CertificateHolder): X509Certificate {
 
     return certificate
 }
+
+
