@@ -28,6 +28,7 @@ fun main() {
         objectOutputStream.writeObject(clientCert)
         val clientCertSha = commonFunctions.sha256(commonFunctions.convertToBase64PEMString(clientCert))
         println("Client cert sha256: $clientCertSha")
+
         objectOutputStream.writeObject(clientCertSha)
         objectOutputStream.flush()
         socket.close()

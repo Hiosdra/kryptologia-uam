@@ -13,28 +13,14 @@ import java.security.KeyPair
 import java.security.KeyPairGenerator
 import java.security.SecureRandom
 import java.security.Security
-import java.util.*
+import java.util.Date
 
-//fun main() {
-//    val commonFunctions = CommonFunctions()
-//    val rootCertificate = createRootCertificate(X500Name("CN=Root Certificate"), 365)
-//    val certificate = JcaX509CertificateConverter().getCertificate(rootCertificate)
-//    commonFunctions.saveIntoFile(certificate, "src/main/resources/cert/rootCert.pem")
-//    println(certificate)
-//}
 
 fun createRootCertificate(subjectDN: X500Name, validityInDays: Int, keyPair: KeyPair): X509CertificateHolder {
-    //Security.addProvider(BouncyCastleProvider())
-
     val random = SecureRandom()
-//    val keyPairGenerator = KeyPairGenerator.getInstance("RSA", "BC")
-//    keyPairGenerator.initialize(2048, random)
-//    val keyPair = keyPairGenerator.generateKeyPair()
     val subjectPublicKeyInfo = SubjectPublicKeyInfo.getInstance(keyPair.public.encoded)
-
     val notBefore = Date()
     val notAfter = Date(notBefore.time + (validityInDays * 24L * 60L * 60L * 1000L))
-
     val serialNumber = BigInteger(64, random)
 
     val certificateBuilder =

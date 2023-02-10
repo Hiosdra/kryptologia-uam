@@ -4,25 +4,33 @@ import random
 
 random.seed(0)
 
-
+# This is a custom exception class for an inverse error
 class InvError(Exception):
     def __init__(self, v):
         self.value = v
 
 
+# This function converts a number to an integer and uses gmpy2's mpz function
+# if gmpy2 is available, otherwise it uses the built-in int function
 def Int(x):
     return int(x) if gmpy2 is None else gmpy2.mpz(x)
 
 
+# This function finds the modular inverse of a number
 def inv(a, n):
     a %= n
     if gmpy2 is None:
+        # If gmpy2 is not available, the pow function is used with a third argument
+        # to find the modular inverse. If an exception is raised, it is assumed
+        # that the gcd of a and n is not 1, so the gcd is found using the math library.
         try:
             return pow(a, -1, n)
         except ValueError:
             import math
             raise InvError(math.gcd(a, n))
     else:
+        # If gmpy2 is available, the gcdext function is used to find the gcd and
+        # the modular inverse of a. If the gcd is not 1, an InvError is raised.
         g, s, t = gmpy2.gcdext(a, n)
         if g != 1:
             raise InvError(g)
@@ -42,12 +50,14 @@ def inv(a, n):
     else: return r1
     '''
 
-
+# This class represents a point on an elliptic curve
 class ECpoint(object):
     def __init__(self, A, B, N, x, y, *, prepare=True):
         if prepare:
+            # All inputs are converted to integers and reduced modulo N
             N = Int(N)
             A, B, x, y = [Int(e) % N for e in [A, B, x, y]]
+            # If the point is not on the curve, a ValueError is raised
             if (y ** 2 - x ** 3 - A * x - B) % N != 0:
                 raise ValueError
         self.A, self.B, self.N, self.x, self.y = A, B, N, x, y
@@ -63,6 +73,7 @@ class ECpoint(object):
         y = (s * (Px - x) - Py) % N
         return ECpoint(A, B, N, x, y, prepare=False)
 
+    # scalar multiplication
     def __rmul__(self, other):
         other = Int(other - 1)
         r = self
@@ -86,6 +97,7 @@ def BinarySearch(f, a, b):
     return a
 
 
+# Size of the prime factors of the order of the curve
 def FactorBitSize(bound, ncurves, miss_prob=0.1):
     import math
     bound_log2 = math.log2(bound)
@@ -99,7 +111,7 @@ def FactorBitSize(bound, ncurves, miss_prob=0.1):
 
     return BinarySearch(lambda x: F(x / 1000.), math.log2(bound) * 1000., 512 * 1000.) / 1000.
 
-
+# Calculates number of needed elliptic curves
 def NeededCurves(bound, target_fac_log2, miss_prob=0.1):
     def F(ncurves):
         return FactorBitSize(bound, ncurves, miss_prob) >= target_fac_log2
@@ -107,6 +119,7 @@ def NeededCurves(bound, target_fac_log2, miss_prob=0.1):
     return round(BinarySearch(lambda x: F(x), 1, 10 ** 15))
 
 
+# Computes amount of work needed to find a factor of n
 def Work(bound, bound_pow, *, logs=[0.], cache={}):
     if bound not in cache:
         import math
@@ -133,7 +146,7 @@ def Work(bound, bound_pow, *, logs=[0.], cache={}):
 def Work2(bound, bound_pow, factor_log):
     return Work(bound, bound_pow) * NeededCurves(bound, factor_log)
 
-
+# Optimal logarithmic size of a bound based on the target factor size and the size of the number to be factored
 def OptimalBoundLog(factor_log, bound_pow):
     import math
     mwork = None
@@ -157,6 +170,7 @@ def OptimalBoundLog(factor_log, bound_pow):
     return mwork[1]
 
 
+# Returns the i-th prime number
 def get_prime(i, *, primes=[2, 3]):
     while i >= len(primes):
         for n in range(primes[-1] + 2, 1 << 62, 2):
